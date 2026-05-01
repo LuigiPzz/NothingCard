@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -195,7 +196,7 @@ fun NothingCardItem(
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = "Favorite",
-                            tint = Color.Yellow,
+                            tint = Color(0xFFFFD700),
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -211,15 +212,35 @@ fun NothingCardItem(
                 }
             }
             
-            // Thumbnail Card
+            // Thumbnail Card 2.0
             Box(
                 modifier = Modifier
                     .width(60.dp)
                     .aspectRatio(1.58f)
                     .clip(RoundedCornerShape(4.dp))
-                    .background(cardColor)
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(cardColor.copy(alpha = 0.8f), cardColor),
+                            center = Offset.Zero,
+                            radius = 200f
+                        )
+                    )
                     .border(BorderStroke(1.dp, NothingWhite.copy(alpha = 0.1f)), RoundedCornerShape(4.dp))
-            )
+            ) {
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val dotSize = 0.5.dp.toPx()
+                    val gap = 4.dp.toPx()
+                    for (i in 0..(size.width / gap).toInt()) {
+                        for (j in 0..(size.height / gap).toInt()) {
+                            drawCircle(
+                                color = NothingWhite.copy(alpha = 0.1f),
+                                radius = dotSize / 2,
+                                center = Offset(i * gap, j * gap)
+                            )
+                        }
+                    }
+                }
+            }
         }
         
         // Nothing Red Dot

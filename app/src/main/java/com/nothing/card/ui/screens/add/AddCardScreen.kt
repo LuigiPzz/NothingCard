@@ -9,13 +9,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,15 +57,20 @@ fun AddCardScreen(
     }
     
     val colorPresets = listOf(
-        "#333333", // Nothing Black
+        "#800020", // Bordeaux
         "#FF3131", // Nothing Red
         "#FF9800", // Orange
         "#FFEB3B", // Yellow
         "#4CAF50", // Green
+        "#1B5E20", // Dark Green
         "#00BCD4", // Cyan
         "#2196F3", // Blue
+        "#004B91", // Aviation Blue
         "#9C27B0", // Purple
-        "#F48FB1"  // Nothing Pink
+        "#F48FB1", // Nothing Pink
+        "#795548", // Brown
+        "#3E2723", // Dark Brown
+        "#333333"  // Nothing Black
     )
 
     var isSaving by remember { mutableStateOf(false) }
@@ -75,7 +84,7 @@ fun AddCardScreen(
                 title = { Text(text = "New Card", style = MaterialTheme.typography.headlineMedium, color = NothingWhite) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = NothingWhite)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = NothingWhite)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = NothingBlack)
@@ -101,37 +110,78 @@ fun AddCardScreen(
                     .fillMaxWidth()
                     .aspectRatio(1.58f)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(cardColor)
-                    .border(androidx.compose.foundation.BorderStroke(1.dp, NothingWhite.copy(alpha = 0.1f)), RoundedCornerShape(16.dp))
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                cardColor.copy(alpha = 0.8f),
+                                cardColor.copy(alpha = 1.0f)
+                            ),
+                            center = Offset.Zero,
+                            radius = 1000f
+                        )
+                    )
+                    .border(androidx.compose.foundation.BorderStroke(1.dp, NothingWhite.copy(alpha = 0.15f)), RoundedCornerShape(16.dp))
             ) {
+                // Dot Matrix Pattern Overlay
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val dotSize = 1.dp.toPx()
+                    val gap = 8.dp.toPx()
+                    val columns = (size.width / gap).toInt()
+                    val rows = (size.height / gap).toInt()
+                    
+                    for (i in 0..columns) {
+                        for (j in 0..rows) {
+                            drawCircle(
+                                color = NothingWhite.copy(alpha = 0.1f),
+                                radius = dotSize / 2,
+                                center = Offset(i * gap, j * gap)
+                            )
+                        }
+                    }
+                }
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.2f))
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.3f))
+                            )
+                        )
                 )
+
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(24.dp)
                 ) {
-                    Text(
-                        text = if (name.isBlank()) "CARD NAME" else name.uppercase(),
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontFamily = NothingSerifFamily,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = if (name.isBlank()) NothingWhite.copy(alpha = 0.3f) else NothingWhite
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Text(
+                            text = if (name.isBlank()) "Card name" else name,
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontFamily = NothingSerifFamily,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 1.sp
+                            ),
+                            color = if (name.isBlank()) NothingWhite.copy(alpha = 0.3f) else NothingWhite
+                        )
+                    }
+
                     val isUrl = cardNumberState.startsWith("http://", ignoreCase = true) || 
                                cardNumberState.startsWith("https://", ignoreCase = true)
                     
                     if (!isUrl) {
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = if (cardNumberState.isBlank()) "No number" else cardNumberState,
+                            text = if (cardNumberState.isBlank()) "NO NUMBER" else cardNumberState,
                             fontFamily = SpaceMonoFamily,
-                            fontSize = 16.sp,
-                            color = NothingWhite.copy(alpha = 0.7f)
+                            fontSize = 14.sp,
+                            color = NothingWhite.copy(alpha = 0.5f),
+                            letterSpacing = 2.sp
                         )
                     }
                     
@@ -145,26 +195,34 @@ fun AddCardScreen(
                         Column {
                             if (ownerName.isNotBlank()) {
                                 Text(
-                                    text = ownerName.uppercase(),
+                                    text = ownerName,
                                     fontFamily = SpaceMonoFamily,
-                                    fontSize = 12.sp,
-                                    color = NothingWhite.copy(alpha = 0.8f)
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = NothingWhite,
+                                    letterSpacing = 1.sp
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                             }
-                            DotMatrixText(
+                            Text(
                                 text = "LOYALTY CARD",
-                                fontSize = 10,
-                                color = NothingWhite.copy(alpha = 0.3f)
+                                fontFamily = SpaceMonoFamily,
+                                fontSize = 9.sp,
+                                color = NothingWhite.copy(alpha = 0.4f),
+                                letterSpacing = 1.sp
                             )
                         }
                         
-                        Box(
-                            modifier = Modifier
-                                .size(6.dp)
-                                .clip(RoundedCornerShape(3.dp))
-                                .background(NothingRed)
-                        )
+                        // Refined Red Accent
+                        Column(horizontalAlignment = Alignment.End) {
+                            Box(
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .clip(CircleShape)
+                                    .background(NothingRed)
+                                    .border(1.dp, NothingWhite.copy(alpha = 0.2f), CircleShape)
+                            )
+                        }
                     }
                 }
             }

@@ -10,7 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -39,6 +39,7 @@ fun SettingsScreen(
     onNavigateToCloudSync: () -> Unit,
     onNavigateToAbout: () -> Unit,
     onNavigateToPkPass: () -> Unit,
+    onNavigateToAccount: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -87,7 +88,7 @@ fun SettingsScreen(
                 title = { Text("Settings", style = MaterialTheme.typography.headlineMedium, color = NothingWhite) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = NothingWhite)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = NothingWhite)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = NothingBlack)
@@ -108,10 +109,10 @@ fun SettingsScreen(
             SettingsGroupCard {
                 if (currentAccount != null) {
                     SettingsItem(
-                        title = currentAccount!!.displayName ?: "User Account",
-                        subtitle = currentAccount!!.email ?: "Signed in",
-                        onClick = { showSignOutDialog = true },
-                        statusText = "Sign out"
+                        title = "Account",
+                        subtitle = currentAccount!!.email ?: "Manage your profile",
+                        onClick = onNavigateToAccount,
+                        isLast = true
                     )
                 } else {
                     SettingsItem(

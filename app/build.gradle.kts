@@ -48,9 +48,17 @@ android {
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            excludes += "/META-INF/INDEX.LIST"
-            excludes += "/META-INF/DEPENDENCIES"
+            excludes.add("/META-INF/AL2.0")
+            excludes.add("/META-INF/LGPL2.1")
+            excludes.add("/META-INF/INDEX.LIST")
+            excludes.add("/META-INF/DEPENDENCIES")
+        }
+    }
+
+    applicationVariants.all {
+        outputs.all {
+            val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            output.outputFileName = "NothingCard.apk"
         }
     }
 }

@@ -11,7 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Star
@@ -25,6 +25,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.foundation.Canvas
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -51,7 +54,7 @@ fun DetailScreen(
         viewModel.loadCard(cardId)
     }
 
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     Scaffold(
         containerColor = NothingBlack,
@@ -60,13 +63,17 @@ fun DetailScreen(
                 title = { 
                     Text(
                         text = card?.name ?: "Card", 
-                        style = MaterialTheme.typography.headlineMedium, 
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontFamily = NothingSerifFamily,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.sp
+                        ), 
                         color = NothingWhite
                     ) 
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = NothingWhite)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = NothingWhite)
                     }
                 },
                 actions = {
@@ -74,7 +81,7 @@ fun DetailScreen(
                         Icon(
                             imageVector = if (card?.isFavorite == true) Icons.Default.Star else Icons.Default.StarBorder,
                             contentDescription = "Favorite",
-                            tint = if (card?.isFavorite == true) Color.Yellow else NothingWhite
+                            tint = if (card?.isFavorite == true) Color(0xFFFFD700) else NothingWhite
                         )
                     }
                     IconButton(onClick = { showEditSheet = true }) {
@@ -85,78 +92,116 @@ fun DetailScreen(
             )
         }
     ) { padding ->
-        card?.let { currentCard ->
-            val cardColor = remember(currentCard.colorHex) {
-                try { 
-                    val fullColor = if (currentCard.colorHex.startsWith("#")) currentCard.colorHex else "#${currentCard.colorHex}"
-                    Color(android.graphics.Color.parseColor(fullColor)) 
-                }
-                catch (e: Exception) { NothingWhite }
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Barcode Display with Dynamic Proportions
-                val zxingFormat = remember(currentCard.barcodeFormat) {
-                    BarcodeGenerator.mapToZXingFormat(currentCard.barcodeFormat)
-                }
-                val isQrCode = zxingFormat == com.google.zxing.BarcodeFormat.QR_CODE
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            // Screen-wide Dot Matrix Background
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val dotSize = 1.dp.toPx()
+                val gap = 16.dp.toPx()
+                val columns = (size.width / gap).toInt()
+                val rows = (size.height / gap).toInt()
                 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(if (isQrCode) 1.0f else 1.58f)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color.White)
-                        .border(androidx.compose.foundation.BorderStroke(8.dp, cardColor), RoundedCornerShape(16.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    val barcodeBitmap = remember(currentCard, zxingFormat) {
-                        val width = if (isQrCode) 800 else 1000
-                        val height = if (isQrCode) 800 else 400
-                        BarcodeGenerator.generateBarcode(currentCard.cardNumber, zxingFormat, width, height)
-                    }
-
-                    barcodeBitmap?.let {
-                        Image(
-                            bitmap = it.asImageBitmap(),
-                            contentDescription = "Barcode",
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(24.dp), // Inner padding for the barcode only
-                            contentScale = ContentScale.Fit
+                for (i in 0..columns) {
+                    for (j in 0..rows) {
+                        drawCircle(
+                            color = NothingWhite.copy(alpha = 0.05f),
+                            radius = dotSize / 2,
+                            center = Offset(i * gap, j * gap)
                         )
                     }
                 }
+            }
 
-                Spacer(modifier = Modifier.height(32.dp))
-                
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    val isUrl = currentCard.cardNumber.startsWith("http://", ignoreCase = true) || 
-                               currentCard.cardNumber.startsWith("https://", ignoreCase = true)
-                    
-                    if (!isUrl) {
-                        DotMatrixText(text = "CARD NUMBER", fontSize = 12, color = MaterialTheme.colorScheme.secondary)
-                        Text(text = currentCard.cardNumber, style = MaterialTheme.typography.displaySmall, color = NothingWhite)
+            card?.let { currentCard ->
+                val cardColor = remember(currentCard.colorHex) {
+                    try { 
+                        val fullColor = if (currentCard.colorHex.startsWith("#")) currentCard.colorHex else "#${currentCard.colorHex}"
+                        Color(android.graphics.Color.parseColor(fullColor)) 
                     }
+                    catch (e: Exception) { NothingWhite }
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // Barcode Display with "Technical" Frame
+                    val zxingFormat = remember(currentCard.barcodeFormat) {
+                        BarcodeGenerator.mapToZXingFormat(currentCard.barcodeFormat)
+                    }
+                    val isQrCode = zxingFormat == com.google.zxing.BarcodeFormat.QR_CODE
                     
-                    if (currentCard.ownerName.isNotBlank()) {
-                        Spacer(modifier = Modifier.height(24.dp))
-                        DotMatrixText(text = "OWNER", fontSize = 12, color = MaterialTheme.colorScheme.secondary)
-                        Text(text = currentCard.ownerName.uppercase(), style = MaterialTheme.typography.headlineMedium, color = NothingWhite)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(if (isQrCode) 1.0f else 1.58f)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(Color.White)
+                            .border(androidx.compose.foundation.BorderStroke(4.dp, cardColor), RoundedCornerShape(16.dp))
+                            .border(androidx.compose.foundation.BorderStroke(1.dp, Color.Black.copy(alpha = 0.1f)), RoundedCornerShape(16.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        val barcodeBitmap = remember(currentCard, zxingFormat) {
+                            val width = if (isQrCode) 800 else 1000
+                            val height = if (isQrCode) 800 else 400
+                            BarcodeGenerator.generateBarcode(currentCard.cardNumber, zxingFormat, width, height)
+                        }
+
+                        barcodeBitmap?.let {
+                            Image(
+                                bitmap = it.asImageBitmap(),
+                                contentDescription = "Barcode",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(if (isQrCode) 32.dp else 24.dp),
+                                contentScale = ContentScale.Fit
+                            )
+                        }
+
+                    }
+
+                    Spacer(modifier = Modifier.height(48.dp))
+                    
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        val isUrl = currentCard.cardNumber.startsWith("http://", ignoreCase = true) || 
+                                   currentCard.cardNumber.startsWith("https://", ignoreCase = true)
+                        
+                        if (!isUrl) {
+                            DotMatrixText(text = "CARD NUMBER", fontSize = 12, color = MaterialTheme.colorScheme.secondary)
+                            Text(
+                                text = currentCard.cardNumber, 
+                                style = MaterialTheme.typography.displaySmall.copy(
+                                    fontFamily = SpaceMonoFamily,
+                                    fontSize = 24.sp,
+                                    letterSpacing = 1.sp
+                                ), 
+                                color = NothingWhite
+                            )
+                        }
+                        
+                        if (currentCard.ownerName.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(32.dp))
+                            DotMatrixText(text = "OWNER", fontSize = 12, color = MaterialTheme.colorScheme.secondary)
+                            Text(
+                                text = currentCard.ownerName, 
+                                style = MaterialTheme.typography.headlineMedium.copy(
+                                    fontFamily = NothingSerifFamily,
+                                    fontWeight = FontWeight.Bold
+                                ), 
+                                color = NothingWhite
+                            )
+                        }
                     }
                 }
-            }
 
             if (showEditSheet) {
                 EditCardBottomSheet(
@@ -176,6 +221,7 @@ fun DetailScreen(
             }
         }
     }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -193,15 +239,20 @@ fun EditCardBottomSheet(
     var editColor by remember { mutableStateOf(card.colorHex) }
 
     val colorPresets = listOf(
-        "#333333", // Nothing Black
+        "#800020", // Bordeaux
         "#FF3131", // Nothing Red
         "#FF9800", // Orange
         "#FFEB3B", // Yellow
         "#4CAF50", // Green
+        "#1B5E20", // Dark Green
         "#00BCD4", // Cyan
         "#2196F3", // Blue
+        "#004B91", // Aviation Blue
         "#9C27B0", // Purple
-        "#F48FB1"  // Nothing Pink
+        "#F48FB1", // Nothing Pink
+        "#795548", // Brown
+        "#3E2723", // Dark Brown
+        "#333333"  // Nothing Black
     )
 
     ModalBottomSheet(

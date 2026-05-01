@@ -170,7 +170,17 @@ fun NothingCardApp() {
                     onNavigateToPermissions = { navController.navigate("permissions") },
                     onNavigateToCloudSync = { navController.navigate("cloud_sync") },
                     onNavigateToAbout = { navController.navigate("about") },
-                    onNavigateToPkPass = { navController.navigate("pkpass") }
+                    onNavigateToPkPass = { navController.navigate("pkpass") },
+                    onNavigateToAccount = { navController.navigate("account") }
+                )
+            }
+
+            composable("account") {
+                com.nothing.card.ui.screens.account.AccountScreen(
+                    onBack = { navController.popBackStack() },
+                    onSignOutSuccess = {
+                        navController.popBackStack("settings", inclusive = false)
+                    }
                 )
             }
             
