@@ -1,16 +1,29 @@
+# Android Studio & IntelliJ
+.idea/
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
+.gradle/
+local.properties
+
+# Firebase (Sensitive)
+app/google-services.json
+
+# Build Artifacts
 build/
 **/build/
+*.apk
+*.aar
+*.ap_
+*.dex
+
+# Keys & Secrets
+*.jks
+*.keystore
+*.p12
+*.pem
+
+# Device captures
 /captures
-.externalNativeBuild
-.cxx
-local.properties
+
+# OS generated files
+.DS_Store
+Thumbs.db
