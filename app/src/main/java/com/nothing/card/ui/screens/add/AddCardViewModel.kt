@@ -33,7 +33,7 @@ class AddCardViewModel @Inject constructor(
     fun getVendorCount(): Int = vendorManager.getAllVendors().size
 
     suspend fun checkIfCardExists(number: String): Boolean {
-        return repository.getCardByNumber(number) != null
+        return repository.getCardByNormalizedNumber(number) != null
     }
 
     fun saveCard(name: String, cardNumber: String, barcodeFormat: String, colorHex: String, ownerName: String, onComplete: () -> Unit) {

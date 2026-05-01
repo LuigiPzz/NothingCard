@@ -55,6 +55,31 @@ fun DetailScreen(
     }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    if (showDeleteDialog) {
+        NothingAlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Delete card?", color = NothingWhite, style = MaterialTheme.typography.titleLarge) },
+            text = { Text("This card will be permanently removed from your wallet.", color = NothingWhite.copy(alpha = 0.7f)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteCard()
+                        showDeleteDialog = false
+                        onBack()
+                    }
+                ) {
+                    Text("DELETE", color = NothingRed, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("CANCEL", color = NothingWhite.copy(alpha = 0.5f))
+                }
+            }
+        )
+    }
 
     Scaffold(
         containerColor = NothingBlack,
@@ -213,9 +238,8 @@ fun DetailScreen(
                         showEditSheet = false
                     },
                     onDelete = {
-                        viewModel.deleteCard()
                         showEditSheet = false
-                        onBack()
+                        showDeleteDialog = true
                     }
                 )
             }

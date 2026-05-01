@@ -83,10 +83,15 @@ class SettingsViewModel @Inject constructor(
                 val backupCards = repository.getBackupCardsFromDrive(account)
                 if (backupCards != null) {
                     val localCards = repository.getAllCardsSync()
-                    val existingKeys = localCards.map { "${it.name.lowercase().trim()}|${it.cardNumber.trim()}" }.toSet()
+                    
+                    fun normalize(n: String) = n.trim().trimStart('0').ifEmpty { "0" }
+                    
+                    val existingKeys = localCards.map { 
+                        "${it.name.lowercase().trim()}|${normalize(it.cardNumber)}" 
+                    }.toSet()
                     
                     val newCards = backupCards.filter { 
-                        "${it.name.lowercase().trim()}|${it.cardNumber.trim()}" !in existingKeys 
+                        "${it.name.lowercase().trim()}|${normalize(it.cardNumber)}" !in existingKeys 
                     }
                     val duplicatesCount = backupCards.size - newCards.size
 

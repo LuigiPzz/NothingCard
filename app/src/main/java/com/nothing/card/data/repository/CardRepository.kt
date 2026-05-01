@@ -22,6 +22,8 @@ class CardRepository @Inject constructor(
     suspend fun getCardById(id: Long): LoyaltyCard? = cardDao.getCardById(id)
 
     suspend fun getCardByNumber(number: String): LoyaltyCard? = cardDao.getCardByNumber(number)
+    
+    suspend fun getCardByNormalizedNumber(number: String): LoyaltyCard? = cardDao.getCardByNormalizedNumber(number)
 
     suspend fun insertCard(card: LoyaltyCard) = cardDao.insertCard(card)
     suspend fun updateCard(card: LoyaltyCard) = cardDao.updateCard(card)

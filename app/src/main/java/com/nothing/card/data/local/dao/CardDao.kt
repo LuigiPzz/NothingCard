@@ -15,6 +15,9 @@ interface CardDao {
     @Query("SELECT * FROM loyalty_cards WHERE cardNumber = :cardNumber LIMIT 1")
     suspend fun getCardByNumber(cardNumber: String): LoyaltyCard?
 
+    @Query("SELECT * FROM loyalty_cards WHERE LTRIM(cardNumber, '0') = LTRIM(:cardNumber, '0') LIMIT 1")
+    suspend fun getCardByNormalizedNumber(cardNumber: String): LoyaltyCard?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCard(card: LoyaltyCard)
 
