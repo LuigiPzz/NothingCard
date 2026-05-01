@@ -80,10 +80,27 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             _isBackingUp.value = true
             try {
+                val localCards = repository.getAllCardsSync()
+                val backupCards = repository.getBackupCardsFromDrive(account) ?: emptyList()
+                
+                fun normalize(n: String) = n.trim().trimStart('0').ifEmpty { "0" }
+                val backupKeys = backupCards.map { 
+                    "${it.name.lowercase().trim()}|${normalize(it.cardNumber)}" 
+                }.toSet()
+                
+                val newCardsCount = localCards.count { 
+                    "${it.name.lowercase().trim()}|${normalize(it.cardNumber)}" !in backupKeys 
+                }
+
                 repository.backupToDrive(account)
-                _syncEvent.emit("Backup completed successfully!")
+                
+                if (newCardsCount > 0) {
+                    _syncEvent.emit("Backup completato! $newCardsCount nuove carte aggiunte al cloud.")
+                } else {
+                    _syncEvent.emit("Backup completato! Il cloud è già aggiornato.")
+                }
             } catch (e: Exception) {
-                _syncEvent.emit("Backup failed: ${e.message}")
+                _syncEvent.emit("Errore durante il backup: ${e.message}")
             } finally {
                 _isBackingUp.value = false
             }
@@ -114,13 +131,13 @@ class SettingsViewModel @Inject constructor(
                         _showDuplicateDialog.value = true
                     } else {
                         repository.insertCards(newCards)
-                        _syncEvent.emit("Restore completed! ${newCards.size} cards added.")
+                        _syncEvent.emit("Ripristino completato! ${newCards.size} carte aggiunte.")
                     }
                 } else {
-                    _syncEvent.emit("No backup found on Google Drive.")
+                    _syncEvent.emit("Nessun backup trovato su Google Drive.")
                 }
             } catch (e: Exception) {
-                _syncEvent.emit("Restore failed: ${e.message}")
+                _syncEvent.emit("Ripristino fallito: ${e.message}")
             } finally {
                 _isRestoring.value = false
             }
@@ -131,7 +148,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             val cardsToInsert = _pendingCards.value
             repository.insertCards(cardsToInsert)
-            _syncEvent.emit("Restore completed! ${cardsToInsert.size} new cards added.")
+            _syncEvent.emit("Ripristino completato! ${cardsToInsert.size} nuove carte aggiunte.")
             _showDuplicateDialog.value = false
             _pendingCards.value = emptyList()
         }

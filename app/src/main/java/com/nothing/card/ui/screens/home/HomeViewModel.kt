@@ -61,6 +61,12 @@ class HomeViewModel @Inject constructor(
         _sortOrder.value = order
     }
 
+    fun toggleFavorite(card: LoyaltyCard) {
+        viewModelScope.launch {
+            repository.updateCard(card.copy(isFavorite = !card.isFavorite))
+        }
+    }
+
     fun deleteCard(card: LoyaltyCard) {
         viewModelScope.launch {
             repository.deleteCard(card)

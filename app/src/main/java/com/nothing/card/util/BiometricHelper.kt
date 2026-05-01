@@ -5,18 +5,12 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class BiometricHelper @Inject constructor(
-    @ApplicationContext private val context: Context
-) {
+class BiometricHelper(private val context: Context) {
     fun canAuthenticate(): Boolean {
         val biometricManager = BiometricManager.from(context)
         return biometricManager.canAuthenticate(
-            BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL
+            BiometricManager.Authenticators.BIOMETRIC_STRONG
         ) == BiometricManager.BIOMETRIC_SUCCESS
     }
 
@@ -52,7 +46,8 @@ class BiometricHelper @Inject constructor(
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(title)
             .setSubtitle(subtitle)
-            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+            .setNegativeButtonText("Annulla")
+            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
             .build()
 
         biometricPrompt.authenticate(promptInfo)

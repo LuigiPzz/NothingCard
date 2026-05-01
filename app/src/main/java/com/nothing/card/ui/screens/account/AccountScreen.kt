@@ -110,23 +110,7 @@ fun AccountScreen(
                 )
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Edit Profile Button (Mock)
-            Surface(
-                onClick = { /* TODO: Edit Profile */ },
-                shape = RoundedCornerShape(24.dp),
-                color = Color(0xFF1A1A1A),
-                contentColor = NothingWhite
-            ) {
-                Text(
-                    text = "Modifica profilo",
-                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
-                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(64.dp))
+            Spacer(modifier = Modifier.height(88.dp))
 
             // Sign Out Button
             Surface(

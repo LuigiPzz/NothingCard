@@ -5,6 +5,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -203,6 +204,7 @@ fun NothingButton(
     }
 }
 
+@androidx.compose.foundation.ExperimentalFoundationApi
 @Composable
 fun NothingCardItem(
     title: String,
@@ -210,6 +212,7 @@ fun NothingCardItem(
     colorHex: String,
     isFavorite: Boolean = false,
     onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val cardColor = remember(colorHex) {
@@ -219,22 +222,36 @@ fun NothingCardItem(
         }
         catch (e: Exception) { NothingWhite.copy(alpha = 0.1f) }
     }
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
 
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .height(82.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(NothingBlack)
             .border(BorderStroke(1.dp, NothingBorder), RoundedCornerShape(16.dp))
-            .clickable { onClick() }
-            .padding(16.dp)
+            .combinedClickable(
+                onClick = { 
+                    haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                    onClick() 
+                },
+                onLongClick = {
+                    haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                    onLongClick?.invoke()
+                }
+            )
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center
+            ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = title,
@@ -286,7 +303,7 @@ fun NothingCardItem(
                     for (i in 0..(size.width / gap).toInt()) {
                         for (j in 0..(size.height / gap).toInt()) {
                             drawCircle(
-                                color = NothingWhite.copy(alpha = 0.1f),
+                                color = NothingWhite.copy(alpha = 0.25f),
                                 radius = dotSize / 2,
                                 center = Offset(i * gap, j * gap)
                             )

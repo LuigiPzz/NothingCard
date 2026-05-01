@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.Canvas
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -75,7 +76,7 @@ fun DetailScreen(
         }
     }
 
-    val card by viewModel.card.collectAsState()
+    val card by viewModel.card.collectAsState(null)
     var showEditSheet by remember { mutableStateOf(false) }
     
     LaunchedEffect(cardId) {
@@ -200,11 +201,7 @@ fun DetailScreen(
                             .border(androidx.compose.foundation.BorderStroke(1.dp, Color.Black.copy(alpha = 0.1f)), RoundedCornerShape(16.dp)),
                         contentAlignment = Alignment.Center
                     ) {
-                        val barcodeBitmap = remember(currentCard, zxingFormat) {
-                            val width = if (isQrCode) 800 else 1000
-                            val height = if (isQrCode) 800 else 400
-                            BarcodeGenerator.generateBarcode(currentCard.cardNumber, zxingFormat, width, height)
-                        }
+                        val barcodeBitmap by viewModel.barcodeBitmap.collectAsState(null)
 
                         barcodeBitmap?.let {
                             Image(
@@ -215,8 +212,12 @@ fun DetailScreen(
                                     .padding(if (isQrCode) 32.dp else 24.dp),
                                 contentScale = ContentScale.Fit
                             )
+                        } ?: Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = cardColor, strokeWidth = 2.dp)
                         }
-
                     }
 
                     Spacer(modifier = Modifier.height(48.dp))

@@ -18,10 +18,23 @@ class DetailViewModel @Inject constructor(
     private val _card = MutableStateFlow<LoyaltyCard?>(null)
     val card = _card.asStateFlow()
 
+    private val _barcodeBitmap = MutableStateFlow<android.graphics.Bitmap?>(null)
+    val barcodeBitmap = _barcodeBitmap.asStateFlow()
+
     fun loadCard(id: Long) {
         viewModelScope.launch {
             repository.incrementUsageCount(id)
-            _card.value = repository.getCardById(id)
+            val fetchedCard = repository.getCardById(id)
+            _card.value = fetchedCard
+            
+            // Pre-generate barcode
+            fetchedCard?.let { card ->
+                val zxingFormat = com.nothing.card.util.BarcodeGenerator.mapToZXingFormat(card.barcodeFormat)
+                val isQrCode = zxingFormat == com.google.zxing.BarcodeFormat.QR_CODE
+                val width = if (isQrCode) 800 else 1000
+                val height = if (isQrCode) 800 else 400
+                _barcodeBitmap.value = com.nothing.card.util.BarcodeGenerator.generateBarcode(card.cardNumber, zxingFormat, width, height)
+            }
         }
     }
 
@@ -36,6 +49,13 @@ class DetailViewModel @Inject constructor(
                 )
                 repository.updateCard(updatedCard)
                 _card.value = updatedCard
+                
+                // Re-generate barcode if number/format changed
+                val zxingFormat = com.nothing.card.util.BarcodeGenerator.mapToZXingFormat(updatedCard.barcodeFormat)
+                val isQrCode = zxingFormat == com.google.zxing.BarcodeFormat.QR_CODE
+                val width = if (isQrCode) 800 else 1000
+                val height = if (isQrCode) 800 else 400
+                _barcodeBitmap.value = com.nothing.card.util.BarcodeGenerator.generateBarcode(updatedCard.cardNumber, zxingFormat, width, height)
             }
         }
     }

@@ -29,8 +29,6 @@ val OutfitFamily = FontFamily(
     Font(googleFont = OutfitFont, fontProvider = provider, weight = FontWeight.SemiBold),
     Font(googleFont = OutfitFont, fontProvider = provider, weight = FontWeight.Bold),
 )
-
-// The Serif font used for big titles (using system Serif for guaranteed compatibility)
 val NothingSerifFamily = androidx.compose.ui.text.font.FontFamily.Serif
 
 val NothingTypography = Typography(
