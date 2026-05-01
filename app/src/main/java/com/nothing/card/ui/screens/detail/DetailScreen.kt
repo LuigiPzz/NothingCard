@@ -87,7 +87,10 @@ fun DetailScreen(
     ) { padding ->
         card?.let { currentCard ->
             val cardColor = remember(currentCard.colorHex) {
-                try { Color(android.graphics.Color.parseColor(currentCard.colorHex)) }
+                try { 
+                    val fullColor = if (currentCard.colorHex.startsWith("#")) currentCard.colorHex else "#${currentCard.colorHex}"
+                    Color(android.graphics.Color.parseColor(fullColor)) 
+                }
                 catch (e: Exception) { NothingWhite }
             }
 

@@ -159,7 +159,10 @@ fun NothingCardItem(
     modifier: Modifier = Modifier
 ) {
     val cardColor = remember(colorHex) {
-        try { Color(android.graphics.Color.parseColor(colorHex)) }
+        try { 
+            val fullColor = if (colorHex.startsWith("#")) colorHex else "#$colorHex"
+            Color(android.graphics.Color.parseColor(fullColor)) 
+        }
         catch (e: Exception) { NothingWhite.copy(alpha = 0.1f) }
     }
 
