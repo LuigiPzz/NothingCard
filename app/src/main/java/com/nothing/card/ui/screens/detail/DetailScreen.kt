@@ -31,13 +31,15 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.nothing.card.ui.components.DotMatrixText
-import com.nothing.card.ui.components.NothingButton
+import com.nothing.card.ui.components.*
 import com.nothing.card.ui.theme.NothingBlack
 import com.nothing.card.ui.theme.NothingWhite
 import com.nothing.card.ui.theme.NothingRed
 import com.nothing.card.ui.theme.SpaceMonoFamily
 import com.nothing.card.ui.theme.NothingSerifFamily
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import com.nothing.card.util.BarcodeGenerator
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,6 +49,32 @@ fun DetailScreen(
     onBack: () -> Unit,
     viewModel: DetailViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+    
+    // Find Activity to control window brightness
+    fun Context.findActivity(): Activity? = when (this) {
+        is Activity -> this
+        is ContextWrapper -> baseContext.findActivity()
+        else -> null
+    }
+
+    DisposableEffect(Unit) {
+        val activity = context.findActivity()
+        val originalBrightness = activity?.window?.attributes?.screenBrightness ?: -1f
+        
+        // Boost brightness to max
+        activity?.window?.attributes = activity?.window?.attributes?.apply {
+            screenBrightness = 1.0f
+        }
+        
+        onDispose {
+            // Restore original brightness
+            activity?.window?.attributes = activity?.window?.attributes?.apply {
+                screenBrightness = originalBrightness
+            }
+        }
+    }
+
     val card by viewModel.card.collectAsState()
     var showEditSheet by remember { mutableStateOf(false) }
     
@@ -60,8 +88,8 @@ fun DetailScreen(
     if (showDeleteDialog) {
         NothingAlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Delete card?", color = NothingWhite, style = MaterialTheme.typography.titleLarge) },
-            text = { Text("This card will be permanently removed from your wallet.", color = NothingWhite.copy(alpha = 0.7f)) },
+            title = { Text("Delete this card?", color = NothingWhite, style = MaterialTheme.typography.titleLarge) },
+            text = { Text("This loyalty card and its associated data will be permanently removed from your device. This action cannot be undone.", color = NothingWhite.copy(alpha = 0.7f)) },
             confirmButton = {
                 TextButton(
                     onClick = {

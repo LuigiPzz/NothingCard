@@ -15,8 +15,12 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val repository: CardRepository,
+    private val biometricHelper: com.nothing.card.util.BiometricHelper,
     @dagger.hilt.android.qualifiers.ApplicationContext private val context: android.content.Context
 ) : ViewModel() {
+
+    private val _isBiometricAvailable = MutableStateFlow(biometricHelper.canAuthenticate())
+    val isBiometricAvailable = _isBiometricAvailable.asStateFlow()
 
     private val _isBackingUp = MutableStateFlow(false)
     val isBackingUp = _isBackingUp.asStateFlow()
@@ -35,6 +39,16 @@ class SettingsViewModel @Inject constructor(
 
     private val _syncEvent = kotlinx.coroutines.flow.MutableSharedFlow<String>()
     val syncEvent = _syncEvent.asSharedFlow()
+
+    private val prefs = context.getSharedPreferences("nothing_card_prefs", android.content.Context.MODE_PRIVATE)
+    
+    private val _isBiometricEnabled = MutableStateFlow(prefs.getBoolean("biometric_enabled", false))
+    val isBiometricEnabled = _isBiometricEnabled.asStateFlow()
+
+    fun toggleBiometric(enabled: Boolean) {
+        prefs.edit().putBoolean("biometric_enabled", enabled).apply()
+        _isBiometricEnabled.value = enabled
+    }
 
     init {
         checkCurrentAccount()

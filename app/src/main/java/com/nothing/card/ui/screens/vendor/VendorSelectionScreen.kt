@@ -23,16 +23,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import com.nothing.card.data.model.Vendor
-import com.nothing.card.ui.components.DotMatrixText
+import com.nothing.card.ui.components.*
 import com.nothing.card.ui.theme.NothingBlack
 import com.nothing.card.ui.theme.NothingWhite
-import com.nothing.card.ui.components.NothingSnackbar
 import com.nothing.card.ui.theme.SpaceMonoFamily
 import com.nothing.card.ui.screens.add.AddCardViewModel
 import kotlinx.coroutines.launch
@@ -52,6 +52,20 @@ fun VendorSelectionScreen(
     var showOptions by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    var scanErrorMessage by remember { mutableStateOf("") }
+
+    if (scanErrorMessage.isNotEmpty()) {
+        NothingAlertDialog(
+            onDismissRequest = { scanErrorMessage = "" },
+            title = { Text("Scansione fallita", color = NothingWhite, style = MaterialTheme.typography.titleLarge) },
+            text = { Text(scanErrorMessage, color = NothingWhite.copy(alpha = 0.7f)) },
+            confirmButton = {
+                TextButton(onClick = { scanErrorMessage = "" }) {
+                    Text("OK", color = NothingWhite, fontWeight = FontWeight.Bold)
+                }
+            }
+        )
+    }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -68,18 +82,15 @@ fun VendorSelectionScreen(
                             val formatString = getBarcodeFormatString(barcode.format)
                             onVendorSelected(selectedVendor!!, barcode.rawValue, formatString)
                         } else {
-                            // No barcode found, inform user and navigate
-                            scope.launch {
-                                snackbarHostState.showSnackbar("No barcode detected. Please enter manually.")
-                            }
-                            onVendorSelected(selectedVendor!!, null, null)
+                            // No barcode found
+                            scanErrorMessage = "Non sono riuscito ad identificare alcun codice nell'immagine. Prova a caricarne una più nitida o usa la fotocamera."
                         }
                     }
                     .addOnFailureListener {
-                        onVendorSelected(selectedVendor!!, null, null)
+                        scanErrorMessage = "Errore durante l'analisi dell'immagine. Riprova o inserisci i dati manualmente."
                     }
             } catch (e: Exception) {
-                onVendorSelected(selectedVendor!!, null, null)
+                scanErrorMessage = "Non sono riuscito a caricare l'immagine selezionata. Verifica che il file sia valido."
             }
         }
     }

@@ -113,6 +113,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.8.1")
     // JSON
     implementation("com.google.code.gson:gson:2.10.1")
+    
+    // Biometric
+    implementation("androidx.biometric:biometric-ktx:1.2.0-alpha05")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

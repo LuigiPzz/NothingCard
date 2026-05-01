@@ -141,6 +141,23 @@ fun SettingsScreen(
                 )
             }
 
+            val isBiometricAvailable by viewModel.isBiometricAvailable.collectAsState()
+            val isBiometricEnabled by viewModel.isBiometricEnabled.collectAsState()
+
+            if (isBiometricAvailable) {
+                Spacer(modifier = Modifier.height(32.dp))
+                SettingsSectionHeader(title = "SECURITY")
+                SettingsGroupCard {
+                    SettingsToggleItem(
+                        title = "Biometric Lock",
+                        subtitle = "Protect your cards with fingerprint or face",
+                        checked = isBiometricEnabled,
+                        onCheckedChange = { viewModel.toggleBiometric(it) },
+                        isLast = true
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(32.dp))
 
             SettingsSectionHeader(title = "INFO & SYSTEM")

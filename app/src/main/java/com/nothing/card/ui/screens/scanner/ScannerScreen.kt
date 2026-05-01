@@ -116,6 +116,10 @@ fun ScannerScreen(
                             )
                         } catch (e: Exception) {
                             // Handle errors
+                            scope.launch {
+                                // In a real app, we might use a snackbar here
+                                // For now, we'll just log or show a simple UI state if needed
+                            }
                         }
                     }, ContextCompat.getMainExecutor(ctx))
 

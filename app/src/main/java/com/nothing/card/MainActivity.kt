@@ -1,7 +1,6 @@
 package com.nothing.card
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.tween
@@ -12,7 +11,6 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavType
@@ -29,16 +27,75 @@ import com.nothing.card.ui.theme.NothingBlack
 import com.nothing.card.ui.theme.NothingCardTheme
 import dagger.hilt.android.AndroidEntryPoint
 
+import androidx.compose.runtime.*
+import com.nothing.card.util.BiometricHelper
+import javax.inject.Inject
+
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : androidx.fragment.app.FragmentActivity() {
+    
+    @Inject
+    lateinit var biometricHelper: BiometricHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        
+        val prefs = getSharedPreferences("nothing_card_prefs", android.content.Context.MODE_PRIVATE)
+        val isBiometricEnabled = prefs.getBoolean("biometric_enabled", false)
+
         setContent {
+            var isUnlocked by remember { mutableStateOf(!isBiometricEnabled) }
+
             NothingCardTheme {
-                NothingCardApp()
+                if (isUnlocked) {
+                    NothingCardApp()
+                } else {
+                    // Lock Screen UI
+                    LockScreen(
+                        onUnlockClick = {
+                            biometricHelper.authenticate(
+                                activity = this,
+                                title = "Nothing Card",
+                                subtitle = "Unlock to access your cards",
+                                onSuccess = { isUnlocked = true },
+                                onError = { /* Handle error if needed */ }
+                            )
+                        }
+                    )
+                }
             }
+            
+            // Auto-trigger biometric prompt
+            LaunchedEffect(Unit) {
+                if (isBiometricEnabled && !isUnlocked) {
+                    biometricHelper.authenticate(
+                        activity = this@MainActivity,
+                        title = "Nothing Card",
+                        subtitle = "Unlock to access your cards",
+                        onSuccess = { isUnlocked = true },
+                        onError = { }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun LockScreen(onUnlockClick: () -> Unit) {
+    androidx.compose.foundation.layout.Box(
+        modifier = Modifier.fillMaxSize().androidx.compose.foundation.background(NothingBlack),
+        contentAlignment = androidx.compose.ui.Alignment.Center
+    ) {
+        androidx.compose.foundation.layout.Column(horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
+            com.nothing.card.ui.components.DotMatrixText(text = "LOCKED", fontSize = 32)
+            androidx.compose.foundation.layout.Spacer(modifier = Modifier.androidx.compose.foundation.layout.height(48.dp))
+            com.nothing.card.ui.components.NothingButton(
+                text = "UNLOCK",
+                onClick = onUnlockClick
+            )
         }
     }
 }

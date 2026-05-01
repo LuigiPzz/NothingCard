@@ -121,6 +121,59 @@ fun SettingsItem(
 }
 
 @Composable
+fun SettingsToggleItem(
+    title: String,
+    subtitle: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    isLast: Boolean = false
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onCheckedChange(!checked) }
+            .padding(horizontal = 24.dp, vertical = 18.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = NothingWhite,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = NothingWhite.copy(alpha = 0.5f)
+                )
+            }
+            
+            androidx.compose.material3.Switch(
+                checked = checked,
+                onCheckedChange = onCheckedChange,
+                colors = androidx.compose.material3.SwitchDefaults.colors(
+                    checkedThumbColor = NothingBlack,
+                    checkedTrackColor = NothingWhite,
+                    uncheckedThumbColor = NothingWhite.copy(alpha = 0.5f),
+                    uncheckedTrackColor = NothingWhite.copy(alpha = 0.1f),
+                    uncheckedBorderColor = Color.Transparent
+                )
+            )
+        }
+    }
+    if (!isLast) {
+        androidx.compose.material3.HorizontalDivider(
+            color = NothingWhite.copy(alpha = 0.05f), 
+            modifier = Modifier.padding(horizontal = 24.dp)
+        )
+    }
+}
+
+@Composable
 fun NothingButton(
     text: String,
     onClick: () -> Unit,
