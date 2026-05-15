@@ -41,6 +41,7 @@ fun getCategoryIcon(category: String): ImageVector {
         "SERVICES" -> Icons.Default.Build
         "PET" -> Icons.Default.Pets
         "CHILD" -> Icons.Default.ChildCare
+        "FASHION" -> Icons.Default.Checkroom
         "ALL" -> Icons.Default.AllInclusive
         else -> Icons.Default.Label
     }
