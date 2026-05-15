@@ -259,7 +259,7 @@ fun NothingCardItem(
                 verticalArrangement = Arrangement.Center
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (category.isNotBlank()) {
+                    if (category.isNotBlank() && category.uppercase() != "ALL") {
                         Icon(
                             imageVector = com.nothing.card.ui.screens.home.getCategoryIcon(category),
                             contentDescription = category,
