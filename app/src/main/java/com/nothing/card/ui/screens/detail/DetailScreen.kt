@@ -37,7 +37,7 @@ import com.nothing.card.ui.theme.NothingBlack
 import com.nothing.card.ui.theme.NothingWhite
 import com.nothing.card.ui.theme.NothingRed
 import com.nothing.card.ui.theme.SpaceMonoFamily
-import com.nothing.card.ui.theme.NothingSerifFamily
+import com.nothing.card.ui.theme.SpaceGroteskFamily
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
@@ -117,7 +117,7 @@ fun DetailScreen(
                 title = { 
                     Text(
                         text = card?.name ?: "Card", 
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = MaterialTheme.typography.headlineMedium.copy(fontFamily = SpaceGroteskFamily),
                         color = NothingWhite
                     ) 
                 },
