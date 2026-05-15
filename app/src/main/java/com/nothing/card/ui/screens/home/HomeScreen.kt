@@ -126,21 +126,21 @@ fun HomeScreen(
                 val selectedCategory by viewModel.selectedCategory.collectAsState()
                 val categories by viewModel.activeCategories.collectAsState()
 
-                if (categories.size > 1) { // Only show filter bar if there are categories other than "ALL"
-                    LazyRow(
+                if (categories.size > 1) {
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp, vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        itemsIndexed(categories) { _, cat ->
-                        val isSelected = selectedCategory == cat
+                        // Fixed "ALL" Category
+                        val isAllSelected = selectedCategory == "ALL"
                         Surface(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(12.dp))
-                                .clickable { viewModel.onCategoryChanged(cat) },
-                            color = if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.05f),
-                            border = BorderStroke(1.dp, if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.1f))
+                                .clickable { viewModel.onCategoryChanged("ALL") },
+                            color = if (isAllSelected) NothingWhite else NothingWhite.copy(alpha = 0.05f),
+                            border = BorderStroke(1.dp, if (isAllSelected) NothingWhite else NothingWhite.copy(alpha = 0.1f))
                         ) {
                             Row(
                                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
@@ -148,20 +148,69 @@ fun HomeScreen(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 Icon(
-                                    imageVector = getCategoryIcon(cat),
-                                    contentDescription = cat,
+                                    imageVector = getCategoryIcon("ALL"),
+                                    contentDescription = "ALL",
                                     modifier = Modifier.size(16.dp),
-                                    tint = if (isSelected) NothingBlack else NothingWhite
+                                    tint = if (isAllSelected) NothingBlack else NothingWhite
                                 )
                                 Text(
-                                    text = cat,
+                                    text = "ALL",
                                     style = MaterialTheme.typography.labelSmall.copy(
-                                        color = if (isSelected) NothingBlack else NothingWhite,
+                                        color = if (isAllSelected) NothingBlack else NothingWhite,
                                         fontFamily = SpaceMonoFamily,
                                         fontSize = 11.sp,
                                         letterSpacing = 1.sp
                                     )
                                 )
+                            }
+                        }
+
+                        // Vertical Pipe Divider
+                        Box(
+                            modifier = Modifier
+                                .padding(horizontal = 12.dp)
+                                .width(1.dp)
+                                .height(24.dp)
+                                .background(NothingWhite.copy(alpha = 0.2f))
+                        )
+
+                        // Scrolling Categories
+                        LazyRow(
+                            modifier = Modifier.weight(1f),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            val otherCategories = categories.filter { it != "ALL" }
+                            items(otherCategories) { cat ->
+                                val isSelected = selectedCategory == cat
+                                Surface(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .clickable { viewModel.onCategoryChanged(cat) },
+                                    color = if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.05f),
+                                    border = BorderStroke(1.dp, if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.1f))
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = getCategoryIcon(cat),
+                                            contentDescription = cat,
+                                            modifier = Modifier.size(16.dp),
+                                            tint = if (isSelected) NothingBlack else NothingWhite
+                                        )
+                                        Text(
+                                            text = cat,
+                                            style = MaterialTheme.typography.labelSmall.copy(
+                                                color = if (isSelected) NothingBlack else NothingWhite,
+                                                fontFamily = SpaceMonoFamily,
+                                                fontSize = 11.sp,
+                                                letterSpacing = 1.sp
+                                            )
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
