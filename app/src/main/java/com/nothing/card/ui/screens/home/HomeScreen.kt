@@ -28,7 +28,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.nothing.card.ui.components.*
 import com.nothing.card.ui.theme.*
 import com.nothing.card.data.local.entity.LoyaltyCard
+import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.coroutines.delay
+
+fun getCategoryIcon(category: String): ImageVector {
+    return when (category.uppercase()) {
+        "RETAIL" -> Icons.Default.ShoppingCart
+        "FOOD" -> Icons.Default.Restaurant
+        "TRAVEL" -> Icons.Default.Flight
+        "HEALTH" -> Icons.Default.MedicalServices
+        "ENTERTAINMENT" -> Icons.Default.Movie
+        "SERVICES" -> Icons.Default.Build
+        "ALL" -> Icons.Default.AllInclusive
+        else -> Icons.Default.Label
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
@@ -98,6 +112,12 @@ fun HomeScreen(
                     }
                 }
 
+                SearchBar(
+                    searchQuery = searchQuery,
+                    cardCount = cards.size,
+                    onSearchChange = { viewModel.onSearchQueryChanged(it) }
+                )
+
                 val selectedCategory by viewModel.selectedCategory.collectAsState()
                 val categories = listOf("ALL", "RETAIL", "FOOD", "TRAVEL", "HEALTH", "ENTERTAINMENT", "SERVICES", "OTHER")
 
@@ -116,54 +136,57 @@ fun HomeScreen(
                             color = if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.05f),
                             border = BorderStroke(1.dp, if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.1f))
                         ) {
-                            Text(
-                                text = cat,
-                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    color = if (isSelected) NothingBlack else NothingWhite,
-                                    fontFamily = SpaceMonoFamily,
-                                    fontSize = 11.sp,
-                                    letterSpacing = 1.sp
+                            Row(
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Icon(
+                                    imageVector = getCategoryIcon(cat),
+                                    contentDescription = cat,
+                                    modifier = Modifier.size(16.dp),
+                                    tint = if (isSelected) NothingBlack else NothingWhite
                                 )
-                            )
+                                Text(
+                                    text = cat,
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        color = if (isSelected) NothingBlack else NothingWhite,
+                                        fontFamily = SpaceMonoFamily,
+                                        fontSize = 11.sp,
+                                        letterSpacing = 1.sp
+                                    )
+                                )
+                            }
                         }
                     }
                 }
 
-
-
-                    if (showOptionsSheet) {
-                        ModalBottomSheet(
-                            onDismissRequest = { showOptionsSheet = false },
-                            sheetState = sheetState,
-                            containerColor = Color(0xFF121212),
-                            dragHandle = {
-                                Box(
-                                    modifier = Modifier
-                                        .padding(vertical = 12.dp)
-                                        .size(width = 32.dp, height = 4.dp)
-                                        .clip(CircleShape)
-                                        .background(NothingWhite.copy(alpha = 0.2f))
-                                )
-                            }
-                        ) {
-                            OptionsContent(
-                                currentSortOrder = currentSortOrder,
-                                onSortOrderChanged = { viewModel.onSortOrderChanged(it) },
-                                onSettingsClick = {
-                                    showOptionsSheet = false
-                                    onSettingsClick()
-                                },
-                                onDismiss = { showOptionsSheet = false }
+                if (showOptionsSheet) {
+                    ModalBottomSheet(
+                        onDismissRequest = { showOptionsSheet = false },
+                        sheetState = sheetState,
+                        containerColor = Color(0xFF121212),
+                        dragHandle = {
+                            Box(
+                                modifier = Modifier
+                                    .padding(vertical = 12.dp)
+                                    .size(width = 32.dp, height = 4.dp)
+                                    .clip(CircleShape)
+                                    .background(NothingWhite.copy(alpha = 0.2f))
                             )
                         }
+                    ) {
+                        OptionsContent(
+                            currentSortOrder = currentSortOrder,
+                            onSortOrderChanged = { viewModel.onSortOrderChanged(it) },
+                            onSettingsClick = {
+                                showOptionsSheet = false
+                                onSettingsClick()
+                            },
+                            onDismiss = { showOptionsSheet = false }
+                        )
                     }
-
-                    SearchBar(
-                        searchQuery = searchQuery,
-                        cardCount = cards.size,
-                        onSearchChange = { viewModel.onSearchQueryChanged(it) }
-                    )
+                }
             }
         },
         floatingActionButton = {

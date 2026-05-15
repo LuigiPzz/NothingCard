@@ -289,13 +289,12 @@ fun NothingCardItem(
                 }
                 
                 if (category.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = category,
-                        fontFamily = SpaceMonoFamily,
-                        fontSize = 10.sp,
-                        color = NothingWhite.copy(alpha = 0.4f),
-                        letterSpacing = 1.sp
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Icon(
+                        imageVector = com.nothing.card.ui.screens.home.getCategoryIcon(category),
+                        contentDescription = category,
+                        modifier = Modifier.size(14.dp),
+                        tint = NothingWhite.copy(alpha = 0.3f)
                     )
                 }
             }
