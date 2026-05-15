@@ -6,7 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -111,7 +113,7 @@ fun HomeScreen(
                                 .clip(RoundedCornerShape(12.dp))
                                 .clickable { viewModel.onCategoryChanged(cat) },
                             color = if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.05f),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.1f))
+                            border = BorderStroke(1.dp, if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.1f))
                         ) {
                             Text(
                                 text = cat,
