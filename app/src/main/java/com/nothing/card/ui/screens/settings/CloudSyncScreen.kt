@@ -28,6 +28,7 @@ import com.nothing.card.ui.components.NothingSnackbar
 import com.nothing.card.ui.components.SettingsGroupCard
 import com.nothing.card.ui.components.SettingsItem
 import com.nothing.card.ui.components.SettingsSectionHeader
+import com.nothing.card.ui.components.SyncComparisonCard
 import com.nothing.card.ui.theme.NothingBlack
 import com.nothing.card.ui.theme.NothingWhite
 import com.nothing.card.ui.theme.SpaceMonoFamily
@@ -134,7 +135,21 @@ fun CloudSyncScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            val localCardCount by viewModel.localCardCount.collectAsState()
+            val cloudSyncSummary by viewModel.cloudSyncSummary.collectAsState()
+
+            LaunchedEffect(currentAccount) {
+                currentAccount?.let { viewModel.refreshCloudSummary(it) }
+            }
+
+            if (currentAccount != null) {
+                SyncComparisonCard(
+                    localCount = localCardCount,
+                    cloudCount = cloudSyncSummary?.cardCount ?: 0,
+                    lastSync = cloudSyncSummary?.lastSyncTimestamp
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
 
             if (currentAccount != null) {
                 Text(

@@ -6,11 +6,13 @@ import com.nothing.card.data.local.entity.LoyaltyCard
 import com.nothing.card.data.repository.CardRepository
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
+
+data class CloudSyncSummary(
+    val cardCount: Int,
+    val lastSyncTimestamp: Long?
+)
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
@@ -40,6 +42,12 @@ class SettingsViewModel @Inject constructor(
     private val _syncEvent = kotlinx.coroutines.flow.MutableSharedFlow<String>()
     val syncEvent = _syncEvent.asSharedFlow()
 
+    private val _localCardCount = MutableStateFlow(0)
+    val localCardCount = _localCardCount.asStateFlow()
+
+    private val _cloudSyncSummary = MutableStateFlow<CloudSyncSummary?>(null)
+    val cloudSyncSummary = _cloudSyncSummary.asStateFlow()
+
     private val prefs = context.getSharedPreferences("nothing_card_prefs", android.content.Context.MODE_PRIVATE)
     
     private val _isBiometricEnabled = MutableStateFlow(prefs.getBoolean("biometric_enabled", false))
@@ -52,6 +60,35 @@ class SettingsViewModel @Inject constructor(
 
     init {
         checkCurrentAccount()
+        refreshLocalCount()
+    }
+
+    private fun refreshLocalCount() {
+        viewModelScope.launch {
+            _localCardCount.value = repository.getAllCardsSync().size
+        }
+    }
+
+    fun refreshCloudSummary(account: GoogleSignInAccount) {
+        viewModelScope.launch {
+            try {
+                val backupCards = repository.getBackupCardsFromDrive(account)
+                if (backupCards != null) {
+                    // In a real app, Drive API would give us the file metadata (timestamp).
+                    // For now, if we have cards, we'll assume "now" or we could track it in the file.
+                    // Let's assume the repository has a way to get the timestamp or we use a preference.
+                    val lastSync = prefs.getLong("last_sync_timestamp", 0L).takeIf { it > 0 }
+                    _cloudSyncSummary.value = CloudSyncSummary(
+                        cardCount = backupCards.size,
+                        lastSyncTimestamp = lastSync
+                    )
+                } else {
+                    _cloudSyncSummary.value = null
+                }
+            } catch (e: Exception) {
+                _cloudSyncSummary.value = null
+            }
+        }
     }
 
     private fun checkCurrentAccount() {
@@ -93,6 +130,11 @@ class SettingsViewModel @Inject constructor(
                 }
 
                 repository.backupToDrive(account)
+                val now = System.currentTimeMillis()
+                prefs.edit().putLong("last_sync_timestamp", now).apply()
+                
+                refreshLocalCount()
+                refreshCloudSummary(account)
                 
                 if (newCardsCount > 0) {
                     _syncEvent.emit("Backup completato! $newCardsCount nuove carte aggiunte al cloud.")
@@ -131,7 +173,8 @@ class SettingsViewModel @Inject constructor(
                         _showDuplicateDialog.value = true
                     } else {
                         repository.insertCards(newCards)
-                        _syncEvent.emit("Ripristino completato! ${newCards.size} carte aggiunte.")
+                        _syncEvent.emit("Ripristino completato! ${newCards.size} nuove carte aggiunte.")
+                        refreshLocalCount()
                     }
                 } else {
                     _syncEvent.emit("Nessun backup trovato su Google Drive.")
