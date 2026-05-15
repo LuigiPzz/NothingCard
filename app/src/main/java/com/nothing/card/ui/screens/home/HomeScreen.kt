@@ -37,11 +37,13 @@ fun getCategoryIcon(category: String): ImageVector {
         "FOOD" -> Icons.Default.Restaurant
         "TRAVEL" -> Icons.Default.Flight
         "HEALTH" -> Icons.Default.MedicalServices
-        "ENTERTAINMENT" -> Icons.Default.Movie
+        "TECH" -> Icons.Default.Computer
         "SERVICES" -> Icons.Default.Build
         "PET" -> Icons.Default.Pets
         "CHILD" -> Icons.Default.ChildCare
         "FASHION" -> Icons.Default.Checkroom
+        "BEAUTY" -> Icons.Default.Face
+        "GAME" -> Icons.Default.SportsEsports
         "ALL" -> Icons.Default.AllInclusive
         else -> Icons.Default.Label
     }

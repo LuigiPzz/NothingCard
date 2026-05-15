@@ -51,7 +51,7 @@ fun AddCardScreen(
     var selectedCategory by remember { mutableStateOf("") }
 
     val categories = listOf(
-        "RETAIL", "FOOD", "TRAVEL", "HEALTH", "ENTERTAINMENT", "SERVICES", "PET", "CHILD", "FASHION"
+        "RETAIL", "FOOD", "TRAVEL", "HEALTH", "TECH", "SERVICES", "PET", "CHILD", "FASHION", "BEAUTY", "GAME"
     )
     
     val cardColor = remember(selectedColorHex) { 
