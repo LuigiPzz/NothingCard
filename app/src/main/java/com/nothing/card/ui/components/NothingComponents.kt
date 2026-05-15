@@ -259,6 +259,16 @@ fun NothingCardItem(
                 verticalArrangement = Arrangement.Center
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (category.isNotBlank()) {
+                        Icon(
+                            imageVector = com.nothing.card.ui.screens.home.getCategoryIcon(category),
+                            contentDescription = category,
+                            modifier = Modifier.size(16.dp),
+                            tint = NothingWhite.copy(alpha = 0.6f)
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                    }
+                    
                     Text(
                         text = title,
                         style = MaterialTheme.typography.titleLarge.copy(
@@ -285,16 +295,6 @@ fun NothingCardItem(
                         fontFamily = SpaceMonoFamily,
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.secondary
-                    )
-                }
-                
-                if (category.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Icon(
-                        imageVector = com.nothing.card.ui.screens.home.getCategoryIcon(category),
-                        contentDescription = category,
-                        modifier = Modifier.size(14.dp),
-                        tint = NothingWhite.copy(alpha = 0.3f)
                     )
                 }
             }
