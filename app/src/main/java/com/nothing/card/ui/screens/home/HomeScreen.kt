@@ -128,6 +128,7 @@ fun HomeScreen(
                 }
 
 
+
                     if (showOptionsSheet) {
                         ModalBottomSheet(
                             onDismissRequest = { showOptionsSheet = false },
@@ -154,13 +155,13 @@ fun HomeScreen(
                             )
                         }
                     }
+
+                    SearchBar(
+                        searchQuery = searchQuery,
+                        cardCount = cards.size,
+                        onSearchChange = { viewModel.onSearchQueryChanged(it) }
+                    )
                 }
-                
-                SearchBar(
-                    searchQuery = searchQuery,
-                    cardCount = cards.size,
-                    onSearchChange = { viewModel.onSearchQueryChanged(it) }
-                )
             }
         },
         floatingActionButton = {
