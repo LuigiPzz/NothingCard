@@ -335,11 +335,10 @@ fun AddCardScreen(
                 items(categories) { cat ->
                     val isSelected = selectedCategory == cat
                     Surface(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .clickable { selectedCategory = if (isSelected) "" else cat },
+                        onClick = { selectedCategory = if (isSelected) "" else cat },
+                        shape = RoundedCornerShape(16.dp),
                         color = if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.05f),
-                        border = BorderStroke(1.dp, if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.1f))
+                        border = BorderStroke(1.dp, if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.15f))
                     ) {
                         Text(
                             text = cat,

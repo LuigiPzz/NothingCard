@@ -137,11 +137,10 @@ fun HomeScreen(
                         // Fixed "ALL" Category
                         val isAllSelected = selectedCategory == "ALL"
                         Surface(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(12.dp))
-                                .clickable { viewModel.onCategoryChanged("ALL") },
+                            onClick = { viewModel.onCategoryChanged("ALL") },
+                            shape = RoundedCornerShape(16.dp),
                             color = if (isAllSelected) NothingWhite else NothingWhite.copy(alpha = 0.05f),
-                            border = BorderStroke(1.dp, if (isAllSelected) NothingWhite else NothingWhite.copy(alpha = 0.1f))
+                            border = BorderStroke(1.dp, if (isAllSelected) NothingWhite else NothingWhite.copy(alpha = 0.15f))
                         ) {
                             Row(
                                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
@@ -187,11 +186,10 @@ fun HomeScreen(
                             items(otherCategories) { cat ->
                                 val isSelected = selectedCategory == cat
                                 Surface(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .clickable { viewModel.onCategoryChanged(cat) },
+                                    onClick = { viewModel.onCategoryChanged(cat) },
+                                    shape = RoundedCornerShape(16.dp),
                                     color = if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.05f),
-                                    border = BorderStroke(1.dp, if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.1f))
+                                    border = BorderStroke(1.dp, if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.15f))
                                 ) {
                                     Row(
                                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
