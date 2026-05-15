@@ -259,14 +259,19 @@ fun NothingCardItem(
                 verticalArrangement = Arrangement.Center
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (category.isNotBlank() && category.uppercase() != "ALL") {
-                        Icon(
-                            imageVector = com.nothing.card.ui.screens.home.getCategoryIcon(category),
-                            contentDescription = category,
-                            modifier = Modifier.size(16.dp),
-                            tint = NothingWhite.copy(alpha = 0.6f)
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
+                    // Fixed width icon slot for alignment
+                    Box(
+                        modifier = Modifier.width(26.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        if (category.isNotBlank() && category.uppercase() != "ALL") {
+                            Icon(
+                                imageVector = com.nothing.card.ui.screens.home.getCategoryIcon(category),
+                                contentDescription = category,
+                                modifier = Modifier.size(16.dp),
+                                tint = NothingWhite.copy(alpha = 0.6f)
+                            )
+                        }
                     }
                     
                     Text(
