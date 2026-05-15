@@ -66,7 +66,7 @@ fun AddCardScreen(
         "#800020", // Bordeaux
         "#FF3131", // Nothing Red
         "#FF9800", // Orange
-        "#FFEB3B", // Yellow
+        "#FFB100", // Yellow (Arcaplanet Style)
         "#4CAF50", // Green
         "#1B5E20", // Dark Green
         "#00BCD4", // Cyan
