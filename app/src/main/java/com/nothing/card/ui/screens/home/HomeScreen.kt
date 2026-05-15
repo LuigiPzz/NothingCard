@@ -39,6 +39,7 @@ fun getCategoryIcon(category: String): ImageVector {
         "HEALTH" -> Icons.Default.MedicalServices
         "ENTERTAINMENT" -> Icons.Default.Movie
         "SERVICES" -> Icons.Default.Build
+        "PET" -> Icons.Default.Pets
         "ALL" -> Icons.Default.AllInclusive
         else -> Icons.Default.Label
     }
@@ -119,7 +120,7 @@ fun HomeScreen(
                 )
 
                 val selectedCategory by viewModel.selectedCategory.collectAsState()
-                val categories = listOf("ALL", "RETAIL", "FOOD", "TRAVEL", "HEALTH", "ENTERTAINMENT", "SERVICES", "OTHER")
+                val categories = listOf("ALL", "RETAIL", "FOOD", "TRAVEL", "HEALTH", "ENTERTAINMENT", "SERVICES", "PET", "OTHER")
 
                 LazyRow(
                     modifier = Modifier
