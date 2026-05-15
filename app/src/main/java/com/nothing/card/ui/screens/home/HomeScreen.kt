@@ -161,7 +161,6 @@ fun HomeScreen(
                         cardCount = cards.size,
                         onSearchChange = { viewModel.onSearchQueryChanged(it) }
                     )
-                }
             }
         },
         floatingActionButton = {
