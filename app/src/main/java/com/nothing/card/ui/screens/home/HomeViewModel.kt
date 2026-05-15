@@ -64,12 +64,19 @@ class HomeViewModel @Inject constructor(
     
     val activeCategories: StateFlow<List<String>> = repository.allCards
         .map { allCards ->
-            val uniqueCategories = allCards
-                .map { it.category }
-                .filter { it.isNotBlank() }
-                .distinct()
-                .sorted()
-            listOf("ALL") + uniqueCategories
+            val categoryUsage = allCards
+                .filter { it.category.isNotBlank() }
+                .groupBy { it.category }
+                .mapValues { entry -> entry.value.sumOf { it.usageCount } }
+            
+            val sortedCategories = categoryUsage.entries
+                .sortedWith(
+                    compareByDescending<Map.Entry<String, Int>> { it.value }
+                        .thenBy { it.key }
+                )
+                .map { it.key }
+            
+            listOf("ALL") + sortedCategories
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), listOf("ALL"))
 
