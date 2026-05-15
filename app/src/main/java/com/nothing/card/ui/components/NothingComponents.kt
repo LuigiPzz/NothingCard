@@ -291,7 +291,7 @@ fun NothingCardItem(
                 if (category.isNotBlank()) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "[$category]",
+                        text = category,
                         fontFamily = SpaceMonoFamily,
                         fontSize = 10.sp,
                         color = NothingWhite.copy(alpha = 0.4f),
