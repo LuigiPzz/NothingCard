@@ -117,11 +117,7 @@ fun DetailScreen(
                 title = { 
                     Text(
                         text = card?.name ?: "Card", 
-                        style = MaterialTheme.typography.headlineMedium.copy(
-                            fontFamily = NothingSerifFamily,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp
-                        ), 
+                        style = MaterialTheme.typography.headlineMedium,
                         color = NothingWhite
                     ) 
                 },

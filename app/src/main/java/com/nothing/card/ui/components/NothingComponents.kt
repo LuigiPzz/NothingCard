@@ -30,6 +30,7 @@ import com.nothing.card.ui.theme.NothingRed
 import com.nothing.card.ui.theme.NothingWhite
 import com.nothing.card.ui.theme.SpaceMonoFamily
 import com.nothing.card.ui.theme.NothingSerifFamily
+import com.nothing.card.ui.theme.Ndot57Family
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Star
@@ -256,8 +257,9 @@ fun NothingCardItem(
                     Text(
                         text = title,
                         style = MaterialTheme.typography.titleLarge.copy(
-                            fontFamily = NothingSerifFamily,
-                            fontWeight = FontWeight.Bold
+                            fontFamily = SpaceMonoFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
                         ),
                         color = NothingWhite
                     )
@@ -338,7 +340,7 @@ fun DotMatrixText(
         style = MaterialTheme.typography.displaySmall.copy(
             color = color,
             fontSize = fontSize.sp,
-            fontFamily = SpaceMonoFamily
+            fontFamily = Ndot57Family
         )
     )
 }

@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.nothing.card.ui.components.*
@@ -67,45 +68,60 @@ fun HomeScreen(
         containerColor = NothingBlack,
         topBar = {
             Column(modifier = Modifier.background(NothingBlack)) {
-                TopAppBar(
-                    title = { Text(text = "Cards", style = MaterialTheme.typography.headlineMedium, color = NothingWhite) },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = NothingBlack),
-                    actions = {
-                        var showOptionsSheet by remember { mutableStateOf(false) }
-                        val sheetState = rememberModalBottomSheetState()
-                        
-                        IconButton(onClick = { showOptionsSheet = true }) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "Options", tint = NothingWhite)
-                        }
-                        
-                        if (showOptionsSheet) {
-                            ModalBottomSheet(
-                                onDismissRequest = { showOptionsSheet = false },
-                                sheetState = sheetState,
-                                containerColor = Color(0xFF121212),
-                                dragHandle = {
-                                    Box(
-                                        modifier = Modifier
-                                            .padding(vertical = 12.dp)
-                                            .size(width = 32.dp, height = 4.dp)
-                                            .clip(CircleShape)
-                                            .background(NothingWhite.copy(alpha = 0.2f))
-                                    )
-                                }
-                            ) {
-                                OptionsContent(
-                                    currentSortOrder = currentSortOrder,
-                                    onSortOrderChanged = { viewModel.onSortOrderChanged(it) },
-                                    onSettingsClick = {
-                                        showOptionsSheet = false
-                                        onSettingsClick()
-                                    },
-                                    onDismiss = { showOptionsSheet = false }
+                // Custom Top Bar matching NothingPodcast layout
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 20.dp, end = 12.dp, top = 20.dp, bottom = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Cards",
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontFamily = Ndot57Family,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 34.sp,
+                            lineHeight = 40.sp,
+                            letterSpacing = 1.sp
+                        ),
+                        color = NothingWhite,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    var showOptionsSheet by remember { mutableStateOf(false) }
+                    val sheetState = rememberModalBottomSheetState()
+                    
+                    IconButton(onClick = { showOptionsSheet = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "Options", tint = NothingWhite)
+                    }
+                    
+                    if (showOptionsSheet) {
+                        ModalBottomSheet(
+                            onDismissRequest = { showOptionsSheet = false },
+                            sheetState = sheetState,
+                            containerColor = Color(0xFF121212),
+                            dragHandle = {
+                                Box(
+                                    modifier = Modifier
+                                        .padding(vertical = 12.dp)
+                                        .size(width = 32.dp, height = 4.dp)
+                                        .clip(CircleShape)
+                                        .background(NothingWhite.copy(alpha = 0.2f))
                                 )
                             }
+                        ) {
+                            OptionsContent(
+                                currentSortOrder = currentSortOrder,
+                                onSortOrderChanged = { viewModel.onSortOrderChanged(it) },
+                                onSettingsClick = {
+                                    showOptionsSheet = false
+                                    onSettingsClick()
+                                },
+                                onDismiss = { showOptionsSheet = false }
+                            )
                         }
                     }
-                )
+                }
                 
                 SearchBar(
                     searchQuery = searchQuery,
