@@ -216,34 +216,6 @@ fun HomeScreen(
                     }
                 }
             }
-
-                if (showOptionsSheet) {
-                    ModalBottomSheet(
-                        onDismissRequest = { showOptionsSheet = false },
-                        sheetState = sheetState,
-                        containerColor = Color(0xFF121212),
-                        dragHandle = {
-                            Box(
-                                modifier = Modifier
-                                    .padding(vertical = 12.dp)
-                                    .size(width = 32.dp, height = 4.dp)
-                                    .clip(CircleShape)
-                                    .background(NothingWhite.copy(alpha = 0.2f))
-                            )
-                        }
-                    ) {
-                        OptionsContent(
-                            currentSortOrder = currentSortOrder,
-                            onSortOrderChanged = { viewModel.onSortOrderChanged(it) },
-                            onSettingsClick = {
-                                showOptionsSheet = false
-                                onSettingsClick()
-                            },
-                            onDismiss = { showOptionsSheet = false }
-                        )
-                    }
-                }
-            }
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -256,6 +228,32 @@ fun HomeScreen(
             }
         }
     ) { padding ->
+        if (showOptionsSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showOptionsSheet = false },
+                sheetState = sheetState,
+                containerColor = Color(0xFF121212),
+                dragHandle = {
+                    Box(
+                        modifier = Modifier
+                            .padding(vertical = 12.dp)
+                            .size(width = 32.dp, height = 4.dp)
+                            .clip(CircleShape)
+                            .background(NothingWhite.copy(alpha = 0.2f))
+                    )
+                }
+            ) {
+                OptionsContent(
+                    currentSortOrder = currentSortOrder,
+                    onSortOrderChanged = { viewModel.onSortOrderChanged(it) },
+                    onSettingsClick = {
+                        showOptionsSheet = false
+                        onSettingsClick()
+                    },
+                    onDismiss = { showOptionsSheet = false }
+                )
+            }
+        }
         Box(
             modifier = Modifier
                 .fillMaxSize()
