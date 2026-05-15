@@ -178,7 +178,8 @@ fun HomeScreen(
                         // Scrolling Categories
                         LazyRow(
                             modifier = Modifier.weight(1f),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            contentPadding = PaddingValues(start = 4.dp, end = 20.dp)
                         ) {
                             val otherCategories = categories.filter { it != "ALL" }
                             items(otherCategories) { cat ->
