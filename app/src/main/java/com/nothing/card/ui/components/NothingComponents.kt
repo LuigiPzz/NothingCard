@@ -183,6 +183,7 @@ fun NothingButton(
     enabled: Boolean = true,
     isPrimary: Boolean = true
 ) {
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(24.dp))
@@ -191,7 +192,10 @@ fun NothingButton(
                 BorderStroke(1.dp, if (isPrimary) NothingWhite else NothingBorder),
                 RoundedCornerShape(24.dp)
             )
-            .clickable(enabled = enabled) { onClick() }
+            .clickable(enabled = enabled) { 
+                haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                onClick() 
+            }
             .padding(horizontal = 24.dp, vertical = 12.dp),
         contentAlignment = Alignment.Center
     ) {

@@ -348,6 +348,15 @@ private fun CardsList(
                             animationSpec = tween(300, easing = FastOutSlowInEasing)
                         )
             ) {
+            var isDissolving by remember { mutableStateOf(false) }
+
+            PixelDissolveContainer(
+                isDissolving = isDissolving,
+                onAnimationEnd = {
+                    onDeleteCard(card)
+                    isDissolving = false
+                }
+            ) {
                 var showContextMenu by remember { mutableStateOf(false) }
                 
                 Box {
@@ -387,12 +396,13 @@ private fun CardsList(
                                 }
                             },
                             onClick = {
-                                onDeleteCard(card)
+                                isDissolving = true
                                 showContextMenu = false
                             }
                         )
                     }
                 }
+            }
             }
         }
     }

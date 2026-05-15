@@ -181,11 +181,23 @@ fun DetailScreen(
                 ) {
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Barcode Display with "Technical" Frame
                     val zxingFormat = remember(currentCard.barcodeFormat) {
                         BarcodeGenerator.mapToZXingFormat(currentCard.barcodeFormat)
                     }
                     val isQrCode = zxingFormat == com.google.zxing.BarcodeFormat.QR_CODE
+
+                    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
+                    val barcodeBitmap by produceState<Bitmap?>(initialValue = null, currentCard) {
+                        value = currentCard.let { 
+                            val width = if (isQrCode) 512 else 1000
+                            val height = if (isQrCode) 512 else 400
+                            val bitmap = BarcodeGenerator.generateBarcode(it.cardNumber, zxingFormat, width, height)
+                            if (bitmap != null) {
+                                haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                            }
+                            bitmap
+                        }
+                    }
                     
                     Box(
                         modifier = Modifier
@@ -197,22 +209,15 @@ fun DetailScreen(
                             .border(androidx.compose.foundation.BorderStroke(1.dp, Color.Black.copy(alpha = 0.1f)), RoundedCornerShape(16.dp)),
                         contentAlignment = Alignment.Center
                     ) {
-                        val barcodeBitmap by viewModel.barcodeBitmap.collectAsState(null)
-
-                        barcodeBitmap?.let {
+                        if (barcodeBitmap != null) {
                             Image(
-                                bitmap = it.asImageBitmap(),
+                                bitmap = barcodeBitmap!!.asImageBitmap(),
                                 contentDescription = "Barcode",
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(if (isQrCode) 32.dp else 24.dp),
+                                modifier = Modifier.fillMaxSize(0.9f),
                                 contentScale = ContentScale.Fit
                             )
-                        } ?: Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(color = cardColor, strokeWidth = 2.dp)
+                        } else {
+                            CircularProgressIndicator(color = NothingBlack, strokeWidth = 1.dp)
                         }
                     }
 
@@ -244,7 +249,7 @@ fun DetailScreen(
                             Text(
                                 text = currentCard.ownerName, 
                                 style = MaterialTheme.typography.headlineMedium.copy(
-                                    fontFamily = NothingSerifFamily,
+                                    fontFamily = SpaceGroteskFamily,
                                     fontWeight = FontWeight.Bold
                                 ), 
                                 color = NothingWhite
