@@ -392,7 +392,7 @@ fun AddCardScreen(
                 TextButton(onClick = {
                     showDuplicateDialog = false
                     isSaving = true
-                    viewModel.saveCard(name, cardNumberState.trim(), barcodeFormatState, selectedColorHex, ownerName) {
+                    viewModel.saveCard(name, cardNumberState.trim(), barcodeFormatState, selectedColorHex, ownerName, selectedCategory) {
                         onCardAdded()
                     }
                 }) {
