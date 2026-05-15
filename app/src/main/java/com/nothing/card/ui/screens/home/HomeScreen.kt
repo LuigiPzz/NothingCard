@@ -179,7 +179,8 @@ fun HomeScreen(
                         LazyRow(
                             modifier = Modifier.weight(1f),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            contentPadding = PaddingValues(start = 4.dp, end = 20.dp)
+                            contentPadding = PaddingValues(start = 12.dp, end = 20.dp),
+                            clipToPadding = false
                         ) {
                             val otherCategories = categories.filter { it != "ALL" }
                             items(otherCategories) { cat ->
