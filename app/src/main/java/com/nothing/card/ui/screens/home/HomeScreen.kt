@@ -169,18 +169,19 @@ fun HomeScreen(
                         // Vertical Pipe Divider
                         Box(
                             modifier = Modifier
-                                .padding(horizontal = 12.dp)
+                                .padding(horizontal = 8.dp)
                                 .width(1.dp)
                                 .height(24.dp)
                                 .background(NothingWhite.copy(alpha = 0.2f))
                         )
 
+                        Spacer(modifier = Modifier.width(4.dp))
+
                         // Scrolling Categories
                         LazyRow(
                             modifier = Modifier.weight(1f),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            contentPadding = PaddingValues(start = 12.dp, end = 20.dp),
-                            clipToPadding = false
+                            contentPadding = PaddingValues(start = 8.dp, end = 20.dp)
                         ) {
                             val otherCategories = categories.filter { it != "ALL" }
                             items(otherCategories) { cat ->
