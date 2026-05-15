@@ -28,12 +28,16 @@ class HomeViewModel @Inject constructor(
     private val _sortOrder = MutableStateFlow(SortOrder.MOST_USED)
     val sortOrder: StateFlow<SortOrder> = _sortOrder.asStateFlow()
 
+    private val _selectedCategory = MutableStateFlow("ALL")
+    val selectedCategory: StateFlow<String> = _selectedCategory.asStateFlow()
+
     val cards: StateFlow<List<LoyaltyCard>> = combine(
         _searchQuery,
         _sortOrder,
+        _selectedCategory,
         repository.allCards
-    ) { query, sort, allCards ->
-        val filtered = if (query.isBlank()) {
+    ) { query, sort, category, allCards ->
+        var filtered = if (query.isBlank()) {
             allCards
         } else {
             allCards.filter { 
@@ -41,6 +45,11 @@ class HomeViewModel @Inject constructor(
                 it.ownerName.contains(query, ignoreCase = true) ||
                 it.cardNumber.contains(query)
             }
+        }
+        
+        // Category Filter
+        if (category != "ALL") {
+            filtered = filtered.filter { it.category == category }
         }
         
         when (sort) {
@@ -52,6 +61,10 @@ class HomeViewModel @Inject constructor(
         }
     }
     .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    fun onCategoryChanged(category: String) {
+        _selectedCategory.value = category
+    }
 
     fun onSearchQueryChanged(query: String) {
         _searchQuery.value = query

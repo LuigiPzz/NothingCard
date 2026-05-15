@@ -38,14 +38,15 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun updateCard(name: String, cardNumber: String, colorHex: String, ownerName: String) {
+    fun updateCard(name: String, cardNumber: String, colorHex: String, ownerName: String, category: String) {
         viewModelScope.launch {
             _card.value?.let { currentCard ->
                 val updatedCard = currentCard.copy(
                     name = name,
                     cardNumber = cardNumber,
                     colorHex = colorHex,
-                    ownerName = ownerName
+                    ownerName = ownerName,
+                    category = category
                 )
                 repository.updateCard(updatedCard)
                 _card.value = updatedCard

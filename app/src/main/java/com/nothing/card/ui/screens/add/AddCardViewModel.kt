@@ -36,7 +36,7 @@ class AddCardViewModel @Inject constructor(
         return repository.getCardByNormalizedNumber(number) != null
     }
 
-    fun saveCard(name: String, cardNumber: String, barcodeFormat: String, colorHex: String, ownerName: String, onComplete: () -> Unit) {
+    fun saveCard(name: String, cardNumber: String, barcodeFormat: String, colorHex: String, ownerName: String, category: String, onComplete: () -> Unit) {
         viewModelScope.launch {
             repository.insertCard(
                 LoyaltyCard(
@@ -44,7 +44,8 @@ class AddCardViewModel @Inject constructor(
                     cardNumber = cardNumber,
                     barcodeFormat = barcodeFormat,
                     colorHex = colorHex,
-                    ownerName = ownerName
+                    ownerName = ownerName,
+                    category = category
                 )
             )
             onComplete()

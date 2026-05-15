@@ -255,6 +255,20 @@ fun DetailScreen(
                                 color = NothingWhite
                             )
                         }
+
+                        if (currentCard.category.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(32.dp))
+                            DotMatrixText(text = "CATEGORY", fontSize = 12, color = MaterialTheme.colorScheme.secondary)
+                            Text(
+                                text = currentCard.category,
+                                style = MaterialTheme.typography.headlineMedium.copy(
+                                    fontFamily = SpaceMonoFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp
+                                ),
+                                color = NothingWhite
+                            )
+                        }
                     }
                 }
 
@@ -263,8 +277,8 @@ fun DetailScreen(
                     card = currentCard,
                     sheetState = sheetState,
                     onDismiss = { showEditSheet = false },
-                    onSave = { name, number, color, owner ->
-                        viewModel.updateCard(name, number, color, owner)
+                    onSave = { name, number, color, owner, category ->
+                        viewModel.updateCard(name, number, color, owner, category)
                         showEditSheet = false
                     },
                     onDelete = {
@@ -284,13 +298,16 @@ fun EditCardBottomSheet(
     card: com.nothing.card.data.local.entity.LoyaltyCard,
     sheetState: SheetState,
     onDismiss: () -> Unit,
-    onSave: (String, String, String, String) -> Unit,
+    onSave: (String, String, String, String, String) -> Unit,
     onDelete: () -> Unit
 ) {
     var editName by remember { mutableStateOf(card.name) }
     var editNumber by remember { mutableStateOf(card.cardNumber) }
     var editOwner by remember { mutableStateOf(card.ownerName) }
     var editColor by remember { mutableStateOf(card.colorHex) }
+    var editCategory by remember { mutableStateOf(card.category) }
+    
+    val categories = listOf("RETAIL", "FOOD", "TRAVEL", "HEALTH", "ENTERTAINMENT", "SERVICES", "OTHER")
 
     val colorPresets = listOf(
         "#800020", // Bordeaux
@@ -390,11 +407,40 @@ fun EditCardBottomSheet(
                 }
             }
 
+            Spacer(modifier = Modifier.height(24.dp))
+            DotMatrixText(text = "CATEGORY (OPTIONAL)", fontSize = 12, color = MaterialTheme.colorScheme.secondary)
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(categories) { cat ->
+                    val isSelected = editCategory == cat
+                    Surface(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .clickable { editCategory = if (isSelected) "" else cat },
+                        color = if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.05f),
+                        border = BorderStroke(1.dp, if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.1f))
+                    ) {
+                        Text(
+                            text = cat,
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                color = if (isSelected) NothingBlack else NothingWhite,
+                                fontFamily = SpaceMonoFamily,
+                                letterSpacing = 1.sp
+                            )
+                        )
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(40.dp))
 
             NothingButton(
                 text = "SAVE CHANGES",
-                onClick = { onSave(editName, editNumber, editColor, editOwner) },
+                onClick = { onSave(editName, editNumber, editColor, editOwner, editCategory) },
                 modifier = Modifier.fillMaxWidth()
             )
             

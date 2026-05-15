@@ -15,5 +15,6 @@ data class LoyaltyCard(
     val usageCount: Int = 0,
     val color: Int = 0xFF000000.toInt(), // Default black
     val isFavorite: Boolean = false,
+    val category: String = "",
     val createdAt: Long = System.currentTimeMillis()
 )

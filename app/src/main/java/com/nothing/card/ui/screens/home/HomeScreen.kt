@@ -40,6 +40,8 @@ fun HomeScreen(
     val currentSortOrder by viewModel.sortOrder.collectAsState()
 
     var cardToDelete by remember { mutableStateOf<LoyaltyCard?>(null) }
+    var showOptionsSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
 
     if (cardToDelete != null) {
         NothingAlertDialog(
@@ -88,13 +90,44 @@ fun HomeScreen(
                         modifier = Modifier.weight(1f)
                     )
 
-                    var showOptionsSheet by remember { mutableStateOf(false) }
-                    val sheetState = rememberModalBottomSheetState()
-                    
                     IconButton(onClick = { showOptionsSheet = true }) {
                         Icon(Icons.Default.MoreVert, contentDescription = "Options", tint = NothingWhite)
                     }
-                    
+                }
+
+                val selectedCategory by viewModel.selectedCategory.collectAsState()
+                val categories = listOf("ALL", "RETAIL", "FOOD", "TRAVEL", "HEALTH", "ENTERTAINMENT", "SERVICES", "OTHER")
+
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    itemsIndexed(categories) { _, cat ->
+                        val isSelected = selectedCategory == cat
+                        Surface(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable { viewModel.onCategoryChanged(cat) },
+                            color = if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.05f),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.1f))
+                        ) {
+                            Text(
+                                text = cat,
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    color = if (isSelected) NothingBlack else NothingWhite,
+                                    fontFamily = SpaceMonoFamily,
+                                    fontSize = 11.sp,
+                                    letterSpacing = 1.sp
+                                )
+                            )
+                        }
+                    }
+                }
+
+
                     if (showOptionsSheet) {
                         ModalBottomSheet(
                             onDismissRequest = { showOptionsSheet = false },
@@ -364,6 +397,7 @@ private fun CardsList(
                         title = card.name,
                         subtitle = if (searchQuery.isNotBlank() && card.cardNumber.contains(searchQuery)) card.cardNumber else card.ownerName,
                         colorHex = card.colorHex,
+                        category = card.category,
                         isFavorite = card.isFavorite,
                         onClick = { onCardClick(card.id) },
                         onLongClick = { showContextMenu = true }

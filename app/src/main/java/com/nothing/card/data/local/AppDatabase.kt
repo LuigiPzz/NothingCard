@@ -7,7 +7,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nothing.card.data.local.dao.CardDao
 import com.nothing.card.data.local.entity.LoyaltyCard
 
-@Database(entities = [LoyaltyCard::class], version = 5, exportSchema = false)
+@Database(entities = [LoyaltyCard::class], version = 6, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun cardDao(): CardDao
 
@@ -16,6 +16,12 @@ abstract class AppDatabase : RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 // SQLite doesn't have a dedicated BOOLEAN type, it uses INTEGER (0 = false, 1 = true)
                 database.execSQL("ALTER TABLE loyalty_cards ADD COLUMN isFavorite INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE loyalty_cards ADD COLUMN category TEXT NOT NULL DEFAULT ''")
             }
         }
     }

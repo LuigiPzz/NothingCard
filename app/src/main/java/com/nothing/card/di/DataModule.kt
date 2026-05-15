@@ -22,8 +22,10 @@ object DataModule {
             context,
             AppDatabase::class.java,
             "nothing_card_db"
-        ).addMigrations(AppDatabase.MIGRATION_4_5)
-            .fallbackToDestructiveMigration()
+        ).addMigrations(
+            AppDatabase.MIGRATION_4_5,
+            AppDatabase.MIGRATION_5_6
+        ).fallbackToDestructiveMigration()
             .build()
     }
 

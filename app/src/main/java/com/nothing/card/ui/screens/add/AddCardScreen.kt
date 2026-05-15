@@ -47,6 +47,11 @@ fun AddCardScreen(
     var barcodeFormatState by remember { mutableStateOf(barcodeFormat) }
     
     var selectedColorHex by remember { mutableStateOf(initialColor) }
+    var selectedCategory by remember { mutableStateOf("") }
+
+    val categories = listOf(
+        "RETAIL", "FOOD", "TRAVEL", "HEALTH", "ENTERTAINMENT", "SERVICES", "OTHER"
+    )
     
     val cardColor = remember(selectedColorHex) { 
         try { 
@@ -320,6 +325,34 @@ fun AddCardScreen(
                 }
             }
             
+            DotMatrixText(text = "CATEGORY (OPTIONAL)", fontSize = 12, color = MaterialTheme.colorScheme.secondary)
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(categories) { cat ->
+                    val isSelected = selectedCategory == cat
+                    Surface(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .clickable { selectedCategory = if (isSelected) "" else cat },
+                        color = if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.05f),
+                        border = BorderStroke(1.dp, if (isSelected) NothingWhite else NothingWhite.copy(alpha = 0.1f))
+                    ) {
+                        Text(
+                            text = cat,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                color = if (isSelected) NothingBlack else NothingWhite,
+                                fontFamily = SpaceMonoFamily,
+                                letterSpacing = 1.sp
+                            )
+                        )
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.weight(1f))
 
             NothingButton(
@@ -331,7 +364,7 @@ fun AddCardScreen(
                             showDuplicateDialog = true
                         } else {
                             isSaving = true
-                            viewModel.saveCard(name, normalizedNumber, barcodeFormatState, selectedColorHex, ownerName) {
+                            viewModel.saveCard(name, normalizedNumber, barcodeFormatState, selectedColorHex, ownerName, selectedCategory) {
                                 onCardAdded()
                             }
                         }

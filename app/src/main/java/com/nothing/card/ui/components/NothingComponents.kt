@@ -218,7 +218,8 @@ fun NothingCardItem(
     isFavorite: Boolean = false,
     onClick: () -> Unit,
     onLongClick: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    category: String = ""
 ) {
     val cardColor = remember(colorHex) {
         try { 
@@ -284,6 +285,17 @@ fun NothingCardItem(
                         fontFamily = SpaceMonoFamily,
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+                
+                if (category.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "[$category]",
+                        fontFamily = SpaceMonoFamily,
+                        fontSize = 10.sp,
+                        color = NothingWhite.copy(alpha = 0.4f),
+                        letterSpacing = 1.sp
                     )
                 }
             }
