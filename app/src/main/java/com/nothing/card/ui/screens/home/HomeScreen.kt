@@ -120,15 +120,16 @@ fun HomeScreen(
                 )
 
                 val selectedCategory by viewModel.selectedCategory.collectAsState()
-                val categories = listOf("ALL", "RETAIL", "FOOD", "TRAVEL", "HEALTH", "ENTERTAINMENT", "SERVICES", "PET", "OTHER")
+                val categories by viewModel.activeCategories.collectAsState()
 
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    itemsIndexed(categories) { _, cat ->
+                if (categories.size > 1) { // Only show filter bar if there are categories other than "ALL"
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        itemsIndexed(categories) { _, cat ->
                         val isSelected = selectedCategory == cat
                         Surface(
                             modifier = Modifier
@@ -161,6 +162,7 @@ fun HomeScreen(
                         }
                     }
                 }
+            }
 
                 if (showOptionsSheet) {
                     ModalBottomSheet(

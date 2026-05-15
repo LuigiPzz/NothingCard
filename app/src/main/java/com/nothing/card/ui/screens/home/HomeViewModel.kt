@@ -61,6 +61,17 @@ class HomeViewModel @Inject constructor(
         }
     }
     .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    
+    val activeCategories: StateFlow<List<String>> = repository.allCards
+        .map { allCards ->
+            val uniqueCategories = allCards
+                .map { it.category }
+                .filter { it.isNotBlank() }
+                .distinct()
+                .sorted()
+            listOf("ALL") + uniqueCategories
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), listOf("ALL"))
 
     fun onCategoryChanged(category: String) {
         _selectedCategory.value = category
