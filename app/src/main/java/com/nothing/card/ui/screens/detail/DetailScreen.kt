@@ -308,7 +308,7 @@ fun EditCardBottomSheet(
     var editColor by remember { mutableStateOf(card.colorHex) }
     var editCategory by remember { mutableStateOf(card.category) }
     
-    val categories = listOf("RETAIL", "FOOD", "TRAVEL", "HEALTH", "ENTERTAINMENT", "SERVICES", "PET", "OTHER")
+    val categories = listOf("RETAIL", "FOOD", "TRAVEL", "HEALTH", "ENTERTAINMENT", "SERVICES", "PET", "CHILD")
 
     val colorPresets = listOf(
         "#800020", // Bordeaux
