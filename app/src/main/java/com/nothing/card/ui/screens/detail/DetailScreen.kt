@@ -115,13 +115,7 @@ fun DetailScreen(
         containerColor = NothingBlack,
         topBar = {
             TopAppBar(
-                title = { 
-                    Text(
-                        text = card?.name ?: "Card", 
-                        style = MaterialTheme.typography.headlineMedium.copy(fontFamily = SpaceGroteskFamily),
-                        color = NothingWhite
-                    ) 
-                },
+                title = { },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = NothingWhite)
@@ -200,25 +194,136 @@ fun DetailScreen(
                         }
                     }
                     
+                    val desaturatedColor = remember(cardColor) {
+                        Color(
+                            red = (cardColor.red * 0.6f),
+                            green = (cardColor.green * 0.6f),
+                            blue = (cardColor.blue * 0.6f),
+                            alpha = 1.0f
+                        )
+                    }
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .aspectRatio(if (isQrCode) 1.0f else 1.58f)
+                            .aspectRatio(1.58f)
                             .clip(RoundedCornerShape(16.dp))
-                            .background(Color.White)
-                            .border(androidx.compose.foundation.BorderStroke(4.dp, cardColor), RoundedCornerShape(16.dp))
-                            .border(androidx.compose.foundation.BorderStroke(1.dp, Color.Black.copy(alpha = 0.1f)), RoundedCornerShape(16.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (barcodeBitmap != null) {
-                            Image(
-                                bitmap = barcodeBitmap!!.asImageBitmap(),
-                                contentDescription = "Barcode",
-                                modifier = Modifier.fillMaxSize(0.9f),
-                                contentScale = ContentScale.Fit
+                            .background(
+                                Brush.linearGradient(
+                                    colors = listOf(cardColor, desaturatedColor)
+                                )
                             )
-                        } else {
-                            CircularProgressIndicator(color = NothingBlack, strokeWidth = 1.dp)
+                            .border(BorderStroke(1.dp, Color.White.copy(alpha = 0.15f)), RoundedCornerShape(16.dp))
+                    ) {
+                        // 1. Pattern di punti sullo sfondo della carta
+                        Canvas(modifier = Modifier.fillMaxSize()) {
+                            val dotSize = 0.6.dp.toPx()
+                            val gap = 10.dp.toPx()
+                            for (i in 0..(size.width / gap).toInt()) {
+                                for (j in 0..(size.height / gap).toInt()) {
+                                    drawCircle(
+                                        color = Color.White.copy(alpha = 0.12f),
+                                        radius = dotSize / 2,
+                                        center = Offset(i * gap, j * gap)
+                                    )
+                                }
+                            }
+                        }
+
+                        // 2. Riflesso plastica
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.linearGradient(
+                                        colors = listOf(
+                                            Color.White.copy(alpha = 0.12f),
+                                            Color.White.copy(alpha = 0.04f),
+                                            Color.Transparent,
+                                            Color.Transparent
+                                        ),
+                                        start = Offset(0f, 0f),
+                                        end = Offset(600f, 600f)
+                                    )
+                                )
+                        )
+
+                        // 3. Contenuto della carta
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            // Header
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 20.dp, vertical = 16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = currentCard.name.uppercase(),
+                                    color = Color.White,
+                                    fontFamily = SpaceMonoFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp,
+                                    maxLines = 1
+                                )
+                                if (currentCard.category.isNotBlank() && currentCard.category.uppercase() != "ALL") {
+                                    Icon(
+                                        imageVector = com.nothing.card.ui.screens.home.getCategoryIcon(currentCard.category),
+                                        contentDescription = null,
+                                        tint = Color.White.copy(alpha = 0.8f),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+
+                            // Area Codice (Finestra Bianca)
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.CenterHorizontally)
+                                    .weight(1f)
+                                    .padding(horizontal = 24.dp)
+                                    .fillMaxHeight(0.65f)
+                                    .aspectRatio(if (isQrCode) 1.0f else 2.6f)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(Color.White)
+                                    .border(BorderStroke(1.dp, Color.Black.copy(alpha = 0.1f)), RoundedCornerShape(8.dp)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (barcodeBitmap != null) {
+                                    Image(
+                                        bitmap = barcodeBitmap!!.asImageBitmap(),
+                                        contentDescription = "Barcode",
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(if (isQrCode) 10.dp else 8.dp),
+                                        contentScale = ContentScale.Fit
+                                    )
+                                } else {
+                                    CircularProgressIndicator(color = NothingBlack, strokeWidth = 1.dp)
+                                }
+                            }
+
+                            // Footer
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 20.dp, vertical = 12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = currentCard.cardNumber,
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    fontFamily = SpaceMonoFamily,
+                                    fontSize = 12.sp,
+                                    maxLines = 1
+                                )
+                                Canvas(modifier = Modifier.size(6.dp)) {
+                                    drawCircle(color = NothingRed)
+                                }
+                            }
                         }
                     }
 

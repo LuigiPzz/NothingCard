@@ -235,8 +235,8 @@ fun NothingCardItem(
             .fillMaxWidth()
             .height(82.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(NothingBlack)
-            .border(BorderStroke(1.dp, NothingBorder), RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .border(BorderStroke(1.dp, NothingWhite.copy(alpha = 0.08f)), RoundedCornerShape(16.dp))
             .combinedClickable(
                 onClick = { 
                     haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
